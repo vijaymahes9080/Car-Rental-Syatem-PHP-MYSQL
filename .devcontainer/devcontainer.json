@@ -28,5 +28,5 @@
       "onAutoForward": "openBrowser"
     }
   },
-  "postCreateCommand": "bash .devcontainer/setup.sh"
+  "postStartCommand": "bash .devcontainer/setup.sh"
 }
