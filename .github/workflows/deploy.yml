@@ -1,0 +1,32 @@
+name: Deploy to Free Hosting (FTP)
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: 🚀 Deploy Website
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🚚 Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: 📂 Sync Files via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: /htdocs/
+          # Exclude configuration files or git files to avoid overwriting production configs
+          exclude: |
+            **/.git*
+            **/.github*
+            **/README.md
+            **/LICENSE
+            **/CONTRIBUTING.md
+            **/CODE_OF_CONDUCT.md
+            **/db/**
