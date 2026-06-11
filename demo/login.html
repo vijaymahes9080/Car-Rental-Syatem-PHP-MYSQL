@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Car Rental - Login</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  
+  <link rel="stylesheet" type="text/css" href="css/reset.css">
+  <link rel="stylesheet" type="text/css" href="css/main.css">
+  <link rel="stylesheet" type="text/css" href="css/responsive.css">
+
+  <script src="js/demo.js"></script>
+  <style>
+    header {
+      background: rgba(28, 54, 85, 0.9) !important;
+    }
+    #fom {
+      background: #f8fafc;
+      padding: 40px;
+      margin: 40px auto;
+      max-width: 500px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e2e8f0;
+    }
+    .form-title {
+      text-align: center;
+      color: #1e3a8a;
+      font-size: 24px;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: #475569;
+      font-weight: bold;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    .btn-submit {
+      width: 100%;
+      padding: 12px;
+      background: #1e3a8a;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .btn-submit:hover {
+      background: #1d4ed8;
+    }
+    .switch-link {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 14px;
+    }
+    .switch-link a {
+      color: #2563eb;
+      text-decoration: none;
+    }
+    .info-box {
+      background: #eff6ff;
+      border-left: 4px solid #3b82f6;
+      padding: 10px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+      font-size: 13px;
+      color: #1e40af;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="wrapper">
+      <h1 class="logo"><a href="index.html" style="text-decoration:none; color:#fff;">Car Rental</a></h1>
+      <a href="#" class="hamburger"></a>
+      <nav id="navigation-menu">
+        <!-- Rendered dynamically by demo.js -->
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero" style="height: 200px;">
+    <div class="caption" style="margin-top: -30px;">
+      <h2 style="text-align: center; font-size: 50px;">Portal Authentication</h2>
+    </div>
+  </section>
+
+  <div class="wrapper">
+    <div id="fom">
+      <div class="form-title" id="login-title">Client Login</div>
+      
+      <div class="info-box" id="credentials-tip">
+        <strong>Demo Account:</strong><br>
+        Email: <code>client@test.com</code><br>
+        Password: <code>password</code>
+      </div>
+
+      <form id="login-form">
+        <div class="form-group">
+          <label for="username" id="user-label">Email Address:</label>
+          <input type="text" id="username" placeholder="Enter your email" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password:</label>
+          <input type="password" id="password" placeholder="Enter your password" required>
+        </div>
+        <button type="submit" class="btn-submit">Login Here</button>
+      </form>
+
+      <div class="switch-link" id="switch-area">
+        Don't have an account? <a href="signup.html">Register Here</a>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="wrapper footer">
+      <div class="copyrights">
+        &copy; 2026 Car Rental Management System. Powered by GitHub Pages.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const isAdmin = urlParams.get("type") === "admin";
+      
+      const loginTitle = document.getElementById("login-title");
+      const credentialsTip = document.getElementById("credentials-tip");
+      const userLabel = document.getElementById("user-label");
+      const usernameInput = document.getElementById("username");
+      const switchArea = document.getElementById("switch-area");
+
+      if (isAdmin) {
+        loginTitle.textContent = "Admin Login Area";
+        userLabel.textContent = "Admin Username:";
+        usernameInput.placeholder = "Enter Admin Username";
+        credentialsTip.innerHTML = `
+          <strong>Admin Account:</strong><br>
+          Username: <code>admin</code><br>
+          Password: <code>admin</code>
+        `;
+        switchArea.innerHTML = `
+          Are you a client? <a href="login.html?type=client">Client Login</a>
+        `;
+      } else {
+        loginTitle.textContent = "Client Login Area";
+        userLabel.textContent = "Email Address:";
+        usernameInput.placeholder = "Enter your email";
+        credentialsTip.innerHTML = `
+          <strong>Demo Account:</strong><br>
+          Email: <code>client@test.com</code><br>
+          Password: <code>password</code>
+        `;
+        switchArea.innerHTML = `
+          Don't have an account? <a href="signup.html">Register Here</a>
+        `;
+      }
+
+      const form = document.getElementById("login-form");
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const username = usernameInput.value.trim();
+        const password = document.getElementById("password").value;
+
+        if (isAdmin) {
+          if (username === "admin" && password === "admin") {
+            Session.set({ email: "admin", username: "admin", isAdmin: true });
+            alert("Admin Login Successful!");
+            window.location.href = "admin.html";
+          } else {
+            alert("Invalid Admin credentials. Use admin / admin.");
+          }
+        } else {
+          // Client auth
+          // Allow client@test.com or any user in localStorage client table
+          const bookings = JSON.parse(localStorage.getItem("cars_bookings")) || [];
+          const matchedUser = bookings.find(b => b.email.toLowerCase() === username.toLowerCase());
+
+          if (username.toLowerCase() === "client@test.com" && password === "password") {
+            Session.set({ email: "client@test.com", fname: "Demo Client", isAdmin: false });
+            alert("Login Successful!");
+            window.location.href = "index.html";
+          } else if (matchedUser) {
+            Session.set({ email: matchedUser.email, fname: matchedUser.fname, isAdmin: false });
+            alert("Login Successful!");
+            window.location.href = "index.html";
+          } else {
+            alert("Client Account not found. You can Sign Up or use client@test.com / password.");
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>

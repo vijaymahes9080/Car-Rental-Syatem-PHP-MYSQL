@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Car Rental - Book Car</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  
+  <link rel="stylesheet" type="text/css" href="css/reset.css">
+  <link rel="stylesheet" type="text/css" href="css/main.css">
+  <link rel="stylesheet" type="text/css" href="css/responsive.css">
+
+  <script src="js/demo.js"></script>
+  <style>
+    header {
+      background: rgba(28, 54, 85, 0.9) !important;
+    }
+    #fom {
+      background: #f8fafc;
+      padding: 40px;
+      margin: 40px auto;
+      max-width: 600px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e2e8f0;
+    }
+    .form-title {
+      text-align: center;
+      color: #1e3a8a;
+      font-size: 24px;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: #475569;
+      font-weight: bold;
+    }
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    .btn-submit {
+      width: 100%;
+      padding: 12px;
+      background: #1e3a8a;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    .btn-submit:hover {
+      background: #1d4ed8;
+    }
+    .btn-book {
+      display: inline-block;
+      padding: 15px 30px;
+      background: #10b981;
+      color: white;
+      text-decoration: none;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 6px;
+      text-align: center;
+      margin-top: 20px;
+    }
+    .btn-book:hover {
+      background: #059669;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="wrapper">
+      <h1 class="logo"><a href="index.html" style="text-decoration:none; color:#fff;">Car Rental</a></h1>
+      <a href="#" class="hamburger"></a>
+      <nav id="navigation-menu">
+        <!-- Rendered dynamically by demo.js -->
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero" style="height: 200px;">
+    <div class="caption" style="margin-top: -30px;">
+      <h2 style="text-align: center; font-size: 50px;">Car Reservation</h2>
+    </div>
+  </section>
+
+  <section class="listings">
+    <div class="wrapper">
+      <ul class="properties_list" style="display:flex; justify-content:center; margin-bottom:30px;">
+        <li id="selected-car" style="float:none; margin:0;">
+          <!-- Car details loaded here -->
+        </li>
+      </ul>
+
+      <div id="booking-area" style="text-align: center;">
+        <!-- Form or Booking link loaded here -->
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrapper footer">
+      <div class="copyrights">
+        &copy; 2026 Car Rental Management System. Powered by GitHub Pages.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const carId = parseInt(urlParams.get("id"));
+
+      const cars = JSON.parse(localStorage.getItem("cars_catalog")) || [];
+      const car = cars.find(c => c.car_id === carId) || cars[0];
+
+      if (!car) {
+        alert("Car not found.");
+        window.location.href = "index.html";
+        return;
+      }
+
+      // Render selected car
+      document.getElementById("selected-car").innerHTML = `
+        <img class="thumb" src="cars/${car.image}" width="300" height="200" alt="${car.car_name}" style="border-radius:4px; object-fit:cover;">
+        <span class="price">Kshs. ${car.hire_cost.toLocaleString()}</span>
+        <div class="property_details">
+          <h1>Car Make: ${car.car_type}</h1>
+          <h2>Car Name/Model: <span class="property_size">${car.car_name}</span></h2>
+        </div>
+      `;
+
+      const session = Session.get();
+      const bookingArea = document.getElementById("booking-area");
+
+      if (session && !session.isAdmin) {
+        // User logged in, show book button
+        bookingArea.innerHTML = `
+          <h3>You are logged in as <strong>${session.fname}</strong>.</h3>
+          <a href="pay.html?id=${car.car_id}" class="btn-book">Proceed to Booking & Payment</a>
+        `;
+      } else {
+        // User not logged in, show sign-up registration booking form
+        bookingArea.innerHTML = `
+          <div id="fom" style="text-align:left;">
+            <div class="form-title">Enter Your Details to Hire</div>
+            <form id="instant-book-form">
+              <div class="form-group">
+                <label for="fname">Full Name:</label>
+                <input type="text" id="fname" required>
+              </div>
+              <div class="form-group">
+                <label for="phone">Phone Number:</label>
+                <input type="tel" id="phone" required>
+              </div>
+              <div class="form-group">
+                <label for="email">Email Address:</label>
+                <input type="email" id="email" required>
+              </div>
+              <div class="form-group">
+                <label for="id_no">National ID Number:</label>
+                <input type="number" id="id_no" required>
+              </div>
+              <div class="form-group">
+                <label for="gender">Gender:</label>
+                <select id="gender" required>
+                  <option value="">Select Gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="location">Location:</label>
+                <input type="text" id="location" required>
+              </div>
+              <button type="submit" class="btn-submit">Submit Details & Proceed</button>
+            </form>
+            <div style="text-align:center; margin-top:15px; font-size:14px;">
+              Already have an account? <a href="login.html?redirect=book_car.html?id=${car.car_id}" style="color:#2563eb; text-decoration:none;">Login here</a>
+            </div>
+          </div>
+        `;
+
+        document.getElementById("instant-book-form").addEventListener("submit", (e) => {
+          e.preventDefault();
+          const fname = document.getElementById("fname").value.trim();
+          const phone = document.getElementById("phone").value;
+          const email = document.getElementById("email").value.trim();
+          const id_no = document.getElementById("id_no").value;
+          const gender = document.getElementById("gender").value;
+          const locationVal = document.getElementById("location").value.trim();
+
+          // Save temporary registration in session
+          Session.set({ email, fname, isAdmin: false });
+
+          // Redirect to payment page with query params
+          window.location.href = `pay.html?id=${car.car_id}&fname=${encodeURIComponent(fname)}&phone=${phone}&email=${encodeURIComponent(email)}&id_no=${id_no}&gender=${gender}&location=${encodeURIComponent(locationVal)}`;
+        });
+      }
+    });
+  </script>
+</body>
+</html>

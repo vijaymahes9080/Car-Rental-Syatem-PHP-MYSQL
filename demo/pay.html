@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Car Rental - Payment</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  
+  <link rel="stylesheet" type="text/css" href="css/reset.css">
+  <link rel="stylesheet" type="text/css" href="css/main.css">
+  <link rel="stylesheet" type="text/css" href="css/responsive.css">
+
+  <script src="js/demo.js"></script>
+  <style>
+    header {
+      background: rgba(28, 54, 85, 0.9) !important;
+    }
+    #fom {
+      background: #f8fafc;
+      padding: 40px;
+      margin: 40px auto;
+      max-width: 500px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e2e8f0;
+    }
+    .form-title {
+      text-align: center;
+      color: #1e3a8a;
+      font-size: 24px;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: #475569;
+      font-weight: bold;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    .btn-submit {
+      width: 100%;
+      padding: 12px;
+      background: #10b981;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .btn-submit:hover {
+      background: #059669;
+    }
+    .payment-details {
+      background: #eff6ff;
+      border-left: 4px solid #3b82f6;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+      color: #1e3a8a;
+    }
+    .payment-details h4 {
+      margin-top: 0;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="wrapper">
+      <h1 class="logo"><a href="index.html" style="text-decoration:none; color:#fff;">Car Rental</a></h1>
+      <a href="#" class="hamburger"></a>
+      <nav id="navigation-menu">
+        <!-- Rendered dynamically by demo.js -->
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero" style="height: 200px;">
+    <div class="caption" style="margin-top: -30px;">
+      <h2 style="text-align: center; font-size: 50px;">Secure Payment</h2>
+    </div>
+  </section>
+
+  <div class="wrapper">
+    <div id="fom">
+      <div class="form-title">Make Payments Here</div>
+      
+      <div class="payment-details">
+        <h4>🎫 Payment Guidelines:</h4>
+        <p><strong>M-Pesa Paybill Number:</strong> 00000</p>
+        <p><strong>Account Number:</strong> Use your National ID Number</p>
+      </div>
+
+      <form id="payment-form">
+        <div class="form-group">
+          <label for="id_no">National ID Number:</label>
+          <input type="number" id="id_no" placeholder="Enter ID Number used in booking" required>
+        </div>
+        <div class="form-group">
+          <label for="mpesa">MPESA Transaction ID:</label>
+          <input type="text" id="mpesa" placeholder="e.g. QTX876H5J" required>
+        </div>
+        <button type="submit" class="btn-submit">Submit Payment Details</button>
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    <div class="wrapper footer">
+      <div class="copyrights">
+        &copy; 2026 Car Rental Management System. Powered by GitHub Pages.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const carId = parseInt(urlParams.get("id"));
+      const idNoParam = urlParams.get("id_no");
+
+      if (idNoParam) {
+        document.getElementById("id_no").value = idNoParam;
+      }
+
+      const form = document.getElementById("payment-form");
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const mpesa = document.getElementById("mpesa").value.trim().toUpperCase();
+        const id_no = document.getElementById("id_no").value;
+
+        const bookings = JSON.parse(localStorage.getItem("cars_bookings")) || [];
+        
+        // Check if user came from instant booking form with url parameters
+        if (carId && urlParams.get("fname")) {
+          const newBooking = {
+            client_id: Date.now(),
+            fname: urlParams.get("fname"),
+            email: urlParams.get("email"),
+            phone: urlParams.get("phone"),
+            location: urlParams.get("location"),
+            gender: urlParams.get("gender"),
+            car_id: carId,
+            status: "Pending",
+            mpesa: mpesa,
+            id_no: id_no
+          };
+          bookings.push(newBooking);
+          localStorage.setItem("cars_bookings", JSON.stringify(bookings));
+        } else {
+          // Normal booking update
+          const matchedUserIndex = bookings.findIndex(b => b.id_no === id_no);
+          if (matchedUserIndex !== -1) {
+            bookings[matchedUserIndex].mpesa = mpesa;
+            bookings[matchedUserIndex].status = "Pending";
+            if (carId) bookings[matchedUserIndex].car_id = carId;
+            localStorage.setItem("cars_bookings", JSON.stringify(bookings));
+          } else {
+            // Create user booking profile
+            const session = Session.get();
+            const newBooking = {
+              client_id: Date.now(),
+              fname: session ? session.fname : "Guest Client",
+              email: session ? session.email : "guest@test.com",
+              phone: "N/A",
+              location: "N/A",
+              gender: "N/A",
+              car_id: carId || 1,
+              status: "Pending",
+              mpesa: mpesa,
+              id_no: id_no
+            };
+            bookings.push(newBooking);
+            localStorage.setItem("cars_bookings", JSON.stringify(bookings));
+          }
+        }
+
+        alert("Payment Successful! Your reservation request is now Pending Admin approval.");
+        window.location.href = "status.html";
+      });
+    });
+  </script>
+</body>
+</html>

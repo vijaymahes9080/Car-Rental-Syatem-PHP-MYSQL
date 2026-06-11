@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Car Rental - View Status</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  
+  <link rel="stylesheet" type="text/css" href="css/reset.css">
+  <link rel="stylesheet" type="text/css" href="css/main.css">
+  <link rel="stylesheet" type="text/css" href="css/responsive.css">
+
+  <script src="js/demo.js"></script>
+  <style>
+    header {
+      background: rgba(28, 54, 85, 0.9) !important;
+    }
+    .status-card {
+      background: #f8fafc;
+      padding: 30px;
+      margin: 40px auto;
+      max-width: 600px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e2e8f0;
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 8px 16px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 9999px;
+      text-transform: uppercase;
+      margin-top: 10px;
+    }
+    .status-approved {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    .status-pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    .status-rejected {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    .status-none {
+      background: #f1f5f9;
+      color: #475569;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="wrapper">
+      <h1 class="logo"><a href="index.html" style="text-decoration:none; color:#fff;">Car Rental</a></h1>
+      <a href="#" class="hamburger"></a>
+      <nav id="navigation-menu">
+        <!-- Rendered dynamically by demo.js -->
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero" style="height: 200px;">
+    <div class="caption" style="margin-top: -30px;">
+      <h2 style="text-align: center; font-size: 50px;">Booking Verification</h2>
+    </div>
+  </section>
+
+  <div class="wrapper">
+    <div class="status-card" id="status-container">
+      <h2 style="text-decoration: underline; font-weight: bold; margin-bottom: 20px;">Your Booking Status</h2>
+      <div id="status-list">
+        <!-- Status listed dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="wrapper footer">
+      <div class="copyrights">
+        &copy; 2026 Car Rental Management System. Powered by GitHub Pages.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const session = Session.get();
+      const statusList = document.getElementById("status-list");
+
+      if (!session) {
+        statusList.innerHTML = `
+          <p style="color:#ef4444; font-weight:bold;">Please <a href="login.html" style="color:#2563eb;">login</a> to view your booking status.</p>
+        `;
+        return;
+      }
+
+      const bookings = JSON.parse(localStorage.getItem("cars_bookings")) || [];
+      const userBookings = bookings.filter(b => b.email.toLowerCase() === session.email.toLowerCase());
+      const cars = JSON.parse(localStorage.getItem("cars_catalog")) || [];
+
+      if (userBookings.length === 0) {
+        statusList.innerHTML = `
+          <p>You have not made any car reservations yet. <a href="index.html" style="color:#2563eb; font-weight:bold;">Browse available cars here</a>.</p>
+        `;
+      } else {
+        statusList.innerHTML = userBookings.map(b => {
+          const car = cars.find(c => c.car_id === b.car_id);
+          const carName = car ? `${car.car_type} ${car.car_name}` : "Unknown Car Model";
+          let badgeClass = "status-none";
+          if (b.status === "Approved") badgeClass = "status-approved";
+          else if (b.status === "Pending") badgeClass = "status-pending";
+          else if (b.status === "Rejected") badgeClass = "status-rejected";
+
+          return `
+            <div style="border-bottom: 1px solid #e2e8f0; padding: 15px 0;">
+              <p><strong>Reserved Car:</strong> ${carName}</p>
+              <p><strong>MPESA ID:</strong> ${b.mpesa || "Not provided"}</p>
+              <p><strong>ID Number:</strong> ${b.id_no}</p>
+              <div style="margin-top:10px;">
+                <strong>Status:</strong> 
+                <span class="status-badge ${badgeClass}">${b.status}</span>
+              </div>
+            </div>
+          `;
+        }).join("");
+      }
+    });
+  </script>
+</body>
+</html>

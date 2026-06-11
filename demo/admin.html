@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Car Rental - Admin Control Panel</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  
+  <link rel="stylesheet" type="text/css" href="css/reset.css">
+  <link rel="stylesheet" type="text/css" href="css/main.css">
+  <link rel="stylesheet" type="text/css" href="css/responsive.css">
+
+  <script src="js/demo.js"></script>
+  <style>
+    header {
+      background: rgba(28, 54, 85, 0.9) !important;
+    }
+    .admin-panel {
+      margin: 40px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e2e8f0;
+    }
+    h2, h3 {
+      font-weight: bold;
+      color: #1e3a8a;
+      margin-bottom: 15px;
+    }
+    h2 {
+      font-size: 28px;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 10px;
+    }
+    h3 {
+      font-size: 20px;
+      margin-top: 30px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      border: 1px solid #e2e8f0;
+      padding: 12px;
+      text-align: left;
+      font-size: 14px;
+    }
+    th {
+      background: #f1f5f9;
+      color: #475569;
+      font-weight: bold;
+    }
+    tr:hover {
+      background: #f8fafc;
+    }
+    .btn-action {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 12px;
+      margin-right: 5px;
+    }
+    .btn-approve {
+      background: #10b981;
+      color: white;
+    }
+    .btn-approve:hover {
+      background: #059669;
+    }
+    .btn-reject {
+      background: #ef4444;
+      color: white;
+    }
+    .btn-reject:hover {
+      background: #dc2626;
+    }
+    .btn-delete {
+      background: #64748b;
+      color: white;
+    }
+    .btn-delete:hover {
+      background: #475569;
+    }
+    .badge-status {
+      padding: 4px 8px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="wrapper">
+      <h1 class="logo"><a href="index.html" style="text-decoration:none; color:#fff;">Car Rental</a></h1>
+      <a href="#" class="hamburger"></a>
+      <nav id="navigation-menu">
+        <!-- Rendered dynamically by demo.js -->
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero" style="height: 150px;">
+    <div class="caption" style="margin-top: -55px;">
+      <h2 style="text-align: center; color: white; border: none; font-size: 45px;">Admin Control Panel</h2>
+    </div>
+  </section>
+
+  <div class="wrapper">
+    <div class="admin-panel">
+      <h2>Reservations & Hire Requests</h2>
+      <div style="overflow-x: auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Client Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>National ID</th>
+              <th>Car Requested</th>
+              <th>MPESA Code</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="bookings-table-body">
+            <!-- Populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Client Message Center</h2>
+      <div style="overflow-x: auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Sender Email</th>
+              <th>Message Content</th>
+              <th>Time Sent</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="messages-table-body">
+            <!-- Populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="wrapper footer">
+      <div class="copyrights">
+        &copy; 2026 Car Rental Management System. Powered by GitHub Pages.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const session = Session.get();
+      if (!session || !session.isAdmin) {
+        alert("Access Denied. Admins only.");
+        window.location.href = "login.html?type=admin";
+        return;
+      }
+
+      loadData();
+    });
+
+    function loadData() {
+      const bookings = JSON.parse(localStorage.getItem("cars_bookings")) || [];
+      const messages = JSON.parse(localStorage.getItem("cars_messages")) || [];
+      const cars = JSON.parse(localStorage.getItem("cars_catalog")) || [];
+
+      // Render bookings
+      const bookingsBody = document.getElementById("bookings-table-body");
+      if (bookings.length === 0) {
+        bookingsBody.innerHTML = `<tr><td colspan="8" style="text-align:center;">No reservation requests found.</td></tr>`;
+      } else {
+        bookingsBody.innerHTML = bookings.map(b => {
+          const car = cars.find(c => c.car_id === b.car_id);
+          const carName = car ? `${car.car_type} ${car.car_name}` : "N/A";
+          
+          let statusBadgeClass = "badge-status status-none";
+          if (b.status === "Approved") statusBadgeClass = "badge-status status-approved";
+          else if (b.status === "Pending") statusBadgeClass = "badge-status status-pending";
+          else if (b.status === "Rejected") statusBadgeClass = "badge-status status-rejected";
+
+          return `
+            <tr>
+              <td><strong>${b.fname}</strong></td>
+              <td>${b.email}</td>
+              <td>${b.phone || "N/A"}</td>
+              <td>${b.id_no || "N/A"}</td>
+              <td>${carName}</td>
+              <td><code>${b.mpesa || "N/A"}</code></td>
+              <td><span class="${statusBadgeClass}">${b.status}</span></td>
+              <td>
+                ${b.status === "Pending" ? `
+                  <button class="btn-action btn-approve" onclick="updateBookingStatus(${b.client_id}, 'Approved')">Approve</button>
+                  <button class="btn-action btn-reject" onclick="updateBookingStatus(${b.client_id}, 'Rejected')">Reject</button>
+                ` : `
+                  <button class="btn-action btn-delete" onclick="deleteBooking(${b.client_id})">Delete</button>
+                `}
+              </td>
+            </tr>
+          `;
+        }).join("");
+      }
+
+      // Render messages
+      const messagesBody = document.getElementById("messages-table-body");
+      if (messages.length === 0) {
+        messagesBody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No inquiries found.</td></tr>`;
+      } else {
+        messagesBody.innerHTML = messages.map(m => `
+          <tr>
+            <td><strong>${m.email}</strong></td>
+            <td>${m.message}</td>
+            <td>${m.time || "N/A"}</td>
+            <td><span class="badge-status ${m.status === 'Unread' ? 'status-pending' : 'status-approved'}">${m.status}</span></td>
+            <td>
+              ${m.status === 'Unread' ? `<button class="btn-action btn-approve" onclick="readMessage(${m.msg_id})">Mark Read</button>` : ''}
+              <button class="btn-action btn-reject" onclick="deleteMessage(${m.msg_id})">Delete</button>
+            </td>
+          </tr>
+        `).join("");
+      }
+    }
+
+    window.updateBookingStatus = function(clientId, newStatus) {
+      const bookings = JSON.parse(localStorage.getItem("cars_bookings")) || [];
+      const index = bookings.findIndex(b => b.client_id === clientId);
+      if (index !== -1) {
+        bookings[index].status = newStatus;
+        localStorage.setItem("cars_bookings", JSON.stringify(bookings));
+        loadData();
+      }
+    };
+
+    window.deleteBooking = function(clientId) {
+      if (confirm("Are you sure you want to delete this booking history?")) {
+        let bookings = JSON.parse(localStorage.getItem("cars_bookings")) || [];
+        bookings = bookings.filter(b => b.client_id !== clientId);
+        localStorage.setItem("cars_bookings", JSON.stringify(bookings));
+        loadData();
+      }
+    };
+
+    window.readMessage = function(msgId) {
+      const messages = JSON.parse(localStorage.getItem("cars_messages")) || [];
+      const index = messages.findIndex(m => m.msg_id === msgId);
+      if (index !== -1) {
+        messages[index].status = "Read";
+        localStorage.setItem("cars_messages", JSON.stringify(messages));
+        loadData();
+      }
+    };
+
+    window.deleteMessage = function(msgId) {
+      if (confirm("Are you sure you want to delete this message?")) {
+        let messages = JSON.parse(localStorage.getItem("cars_messages")) || [];
+        messages = messages.filter(m => m.msg_id !== msgId);
+        localStorage.setItem("cars_messages", JSON.stringify(messages));
+        loadData();
+      }
+    };
+  </script>
+</body>
+</html>

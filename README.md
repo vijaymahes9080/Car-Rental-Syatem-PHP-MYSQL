@@ -1,6 +1,7 @@
 # 🚗 Premium Car Rental Management System
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/vijaymahes9080/Car-Rental-Syatem-PHP-MYSQL)
+[![Live Demo on GitHub Pages](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-green.svg?style=for-the-badge&logo=github)](https://vijaymahes9080.github.io/Car-Rental-Syatem-PHP-MYSQL/)
 
 [![PHP Version](https://img.shields.io/badge/PHP-7.4%20%7C%208.x-blue.svg?style=for-the-badge&logo=php)](https://www.php.net/)
 [![MySQL Database](https://img.shields.io/badge/MySQL-8.0-orange.svg?style=for-the-badge&logo=mysql)](https://www.mysql.com/)
@@ -79,6 +80,17 @@ The database (`cars.sql`) contains the following key tables:
    * Open your browser and navigate to:
      * **Client Frontend**: `http://localhost/Car-Rental-Syatem-PHP-MYSQL/`
      * **Admin Panel**: `http://localhost/Car-Rental-Syatem-PHP-MYSQL/admin/`
+
+---
+
+## 🌐 GitHub Pages Live Demo
+
+This project includes a **fully interactive static frontend fallback** deployed automatically to GitHub Pages. It simulates the database using the browser's `localStorage` so you can test the entire workflow without running any servers:
+1. **Browse & Hire**: Select a vehicle and fill out the hire registration form.
+2. **Payment Simulation**: Enter an M-Pesa transaction code to pay.
+3. **Verify Status**: Go to "View Status" to check if your booking is pending.
+4. **Admin Approval**: Go to Admin Login (credentials below), log in, and approve/reject the booking.
+5. **Real-time Sync**: Go back to Client view to see the approved booking status!
 
 ---
 

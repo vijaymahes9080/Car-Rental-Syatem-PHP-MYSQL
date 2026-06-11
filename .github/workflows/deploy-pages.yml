@@ -1,0 +1,50 @@
+name: Deploy Static Demo to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  # Allow manual trigger from GitHub Actions tab
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🚚 Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: 📂 Build Pages Directory
+        run: |
+          mkdir -p _site
+          # Copy all demo files
+          cp -r demo/* _site/
+          # Copy common styling and assets
+          cp -r css _site/
+          cp -r fonts _site/
+          cp -r img _site/
+          cp -r cars _site/
+
+      - name: ⚙️ Setup Pages
+        uses: actions/configure-pages@v3
+
+      - name: 📤 Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: '_site'
+
+      - name: 🚀 Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
