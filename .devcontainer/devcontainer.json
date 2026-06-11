@@ -1,0 +1,32 @@
+{
+  "name": "Car Rental PHP & MySQL",
+  "image": "mcr.microsoft.com/devcontainers/php:1-8.2-bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/mysql:1": {
+      "databaseName": "cars"
+    }
+  },
+  "customizations": {
+    "codespaces": {
+      "openFiles": [
+        "README.md"
+      ]
+    },
+    "vscode": {
+      "extensions": [
+        "felixfbecker.php-debug",
+        "bmewburn.vscode-intelephense-client",
+        "mtxr.sqltools",
+        "mtxr.sqltools-driver-mysql"
+      ]
+    }
+  },
+  "forwardPorts": [8080, 3306],
+  "portsAttributes": {
+    "8080": {
+      "label": "Web App",
+      "onAutoForward": "openBrowser"
+    }
+  },
+  "postCreateCommand": "bash .devcontainer/setup.sh"
+}

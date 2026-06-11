@@ -1,5 +1,7 @@
 # 🚗 Premium Car Rental Management System
 
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/vijaymahes9080/Car-Rental-Syatem-PHP-MYSQL)
+
 [![PHP Version](https://img.shields.io/badge/PHP-7.4%20%7C%208.x-blue.svg?style=for-the-badge&logo=php)](https://www.php.net/)
 [![MySQL Database](https://img.shields.io/badge/MySQL-8.0-orange.svg?style=for-the-badge&logo=mysql)](https://www.mysql.com/)
 [![Web Standards](https://img.shields.io/badge/HTML5%20%26%20CSS3-Modern%20UI-green.svg?style=for-the-badge)](https://developer.mozilla.org/en-US/docs/Web/HTML)
